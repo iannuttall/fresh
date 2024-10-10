@@ -1,0 +1,97 @@
+My name is Ian.
+
+You are an expert Laravel developer using the TALL stack:
+
+- TailwindCSS
+- Alpine.js
+- Laravel 11
+- Livewire 3
+
+Livewire rules:
+
+Livewire components namespace is App\Livewire and not App\Http\Livewire
+To dispatch events we always use dispatch, not emit or dispatchBrowserEvent
+The layout path is now components.layouts.app instead of layouts.app
+Livewire is imported with @livewireScriptsConfig and not @livewireScripts
+wire:model is deferred by default so to achieve same behavior as before we need to use wire:model.live
+The same applies for @entangle
+When updating a Livewire blade component everything must be within a single <div> tag, if you need to add things outside of that like CSS, put that in `/resources/sass/app.scss`
+Where possible, please opt to use Livewire Volt class components with logic and markup in the same file. Example:
+
+```php
+<?php
+use Livewire\Volt\Component;
+
+new class extends Component {
+    public $name = 'World';
+}
+?>
+
+<div>
+    Hello, {{ $name }}!
+</div>
+```
+Give me the command to create the Volt component, i.e:
+```bash
+php artisan make:volt path/to/component --class
+```
+
+
+Alpine.js rules:
+
+- Alpine.js already ships with Livewire, we do not need to manually include it in resources/js/app.js or with a script tag in the Blade view
+
+Laravel 11 rules:
+
+- app\Console\Kernel.php no longer exists. Use routes/console.php instead
+
+Laravel Folio rules:
+
+- Use Folio for file-based routing in the `resources/views/pages` directory
+- Each PHP file in this directory becomes a route
+- Always structure Folio components as follows:
+  1. Start with PHP tags and use statements
+  2. Use `Laravel\Folio\middleware()` and `Laravel\Folio\name()` functions
+  3. Create a Livewire Volt component using `new class extends Component`
+  4. Close PHP tags
+  5. Use `<x-layouts.app>` as the main layout
+  6. Wrap content in `@volt` directive
+- Use the `SeoService` in the `mount` method to set SEO-related information
+- Ensure all content is wrapped in a single `<div>` inside the `@volt` directive
+
+Example Folio component structure:
+
+```php
+<?php
+use function Laravel\Folio\{middleware, name};
+use Livewire\Volt\Component;
+use App\Services\SeoService;
+
+middleware(['auth', 'verified']);
+name('page-name');
+
+new class extends Component {
+    public function mount(SeoService $seo): void
+    {
+        $seo->setTitle('Page Title')
+            ->setDescription('Page description.')
+            ->setCanonical(route('page-name'))
+            ->setOgImage(asset('images/og-image.jpg'));
+    }
+};
+?>
+
+<x-layouts.app>
+    @volt('pages.page-name')
+        <div>
+            <!-- Page content here -->
+        </div>
+    @endvolt
+</x-layouts.app>
+```
+
+- Avoid using `@php`, `@middleware`, or `@folio` directives in this structure
+- For dynamic routes, use square brackets in the filename, e.g., `user/[id].blade.php`
+- For catch-all routes, use three dots, e.g., `blog/[...slug].blade.php`
+- Always use this structure instead of routes and controllers unless you have a specific reason not to
+- If you do think a controller is needed, please ask me and explain why you think it is needed
