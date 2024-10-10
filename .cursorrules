@@ -58,6 +58,7 @@ Laravel Folio rules:
   6. Wrap content in `@volt` directive
 - Use the `SeoService` in the `mount` method to set SEO-related information
 - Ensure all content is wrapped in a single `<div>` inside the `@volt` directive
+- Don't use `php artisan make:volt` because we are using Volt components only within the Folio structure in `resources/views/pages` using @volt to define the name and render the component
 
 Example Folio component structure:
 
